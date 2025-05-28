@@ -1,0 +1,70 @@
+import {
+  PaginatedRequestParams,
+  PaginatedResponse,
+  RequestByEmployeeParams,
+  SetTransactionApprovalParams,
+  Transaction,
+  Employee,
+} from "./types"
+import mockData from "../mock-data.json"
+
+const TRANSACTIONS_PER_PAGE = 5
+
+// ✅ Mutable in-memory data store
+const data: { employees: Employee[]; transactions: Transaction[] } = {
+  employees: mockData.employees,
+  transactions: mockData.transactions,
+}
+
+// ✅ Export this to allow updates in other files
+export { data }
+
+export const getEmployees = (): Employee[] => data.employees
+
+export const getTransactionsPaginated = ({
+  page,
+}: PaginatedRequestParams): PaginatedResponse<Transaction[]> => {
+  if (page === null) {
+    throw new Error("Page cannot be null")
+  }
+
+  const start = page * TRANSACTIONS_PER_PAGE
+  const end = start + TRANSACTIONS_PER_PAGE
+
+  if (start > data.transactions.length) {
+    throw new Error(`Invalid page ${page}`)
+  }
+
+  const nextPage = end < data.transactions.length ? page + 1 : null
+
+  return {
+    nextPage,
+    data: data.transactions.slice(start, end),
+  }
+}
+
+export const getTransactionsByEmployee = ({
+  employeeId,
+}: RequestByEmployeeParams): Transaction[] => {
+  if (!employeeId) {
+    throw new Error("Employee id cannot be empty")
+  }
+
+  return data.transactions.filter((transaction) => transaction.employee.id === employeeId)
+}
+
+export const setTransactionApproval = ({
+  transactionId,
+  value,
+}: SetTransactionApprovalParams): void => {
+  const transactionIndex = data.transactions.findIndex(
+    (currentTransaction) => currentTransaction.id === transactionId
+  )
+
+  if (transactionIndex === -1) {
+    throw new Error("Invalid transaction to approve")
+  }
+
+  // ✅ Mutate the live mock data object to persist changes
+  data.transactions[transactionIndex].approved = value
+}
