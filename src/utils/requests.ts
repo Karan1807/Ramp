@@ -10,13 +10,13 @@ import mockData from "../mock-data.json"
 
 const TRANSACTIONS_PER_PAGE = 5
 
-// ✅ Mutable in-memory data store
+
 const data: { employees: Employee[]; transactions: Transaction[] } = {
   employees: mockData.employees,
   transactions: mockData.transactions,
 }
 
-// ✅ Export this to allow updates in other files
+
 export { data }
 
 export const getEmployees = (): Employee[] => data.employees
@@ -65,6 +65,5 @@ export const setTransactionApproval = ({
     throw new Error("Invalid transaction to approve")
   }
 
-  // ✅ Mutate the live mock data object to persist changes
   data.transactions[transactionIndex].approved = value
 }
