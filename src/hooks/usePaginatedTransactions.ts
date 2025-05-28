@@ -16,7 +16,7 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult {
 
   const fetchAll = useCallback(async () => {
     if (paginatedTransactions?.nextPage === null) {
-      console.debug("📭 No more transactions to fetch.")
+   
       return
     }
 
